@@ -3,1602 +3,914 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0a84ff" />
-  <meta name="google-site-verification" content="xrZFu5cpuycZgitIQWcRT0DmD7er9zSVNmzWktTYs10" />
-  <meta name="description" content="ChromePortal is a customizable browser dashboard that helps you stay productive with quick links, widgets, notes, tools, and everything you need in one place.">
-  <title>ChromePortal | Your Smart Link Hub</title>
 
-  <link rel="icon" type="image/png" href="https://mohakdev1220.github.io/chromeportal/logo.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <title>ChromePortal — Your Web, Organized</title>
+  <meta
+    name="description"
+    content="ChromePortal helps you organize your favorite websites, folders and shortcuts. No login required."
+  />
 
   <style>
-    :root {
-      --primary: #0a84ff;
-      --primary-strong: #0066d6;
-      --primary-soft: rgba(10, 132, 255, 0.12);
-      --bg: #f6f9ff;
-      --surface: rgba(255, 255, 255, 0.88);
-      --surface-solid: #ffffff;
-      --surface-muted: #f2f5fb;
-      --text: #101828;
-      --text-muted: #667085;
-      --border: rgba(16, 24, 40, 0.08);
-      --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --success: #22c55e;
-      --folder-accent: #7c3aed;
-      --folder-soft: rgba(124, 58, 237, 0.10);
-      --radius: 22px;
-      --radius-sm: 14px;
-      --ring: 0 0 0 4px rgba(10, 132, 255, 0.14);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    * { box-sizing: border-box; }
+    :root {
+      --bg: #f7f9fc;
+      --text: #101828;
+      --muted: #667085;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --card: rgba(255, 255, 255, 0.78);
+      --border: rgba(15, 23, 42, 0.08);
+    }
 
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(10,132,255,0.12), transparent 28%),
-        radial-gradient(circle at top right, rgba(34,197,94,0.08), transparent 25%),
-        var(--bg);
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.10), transparent 30%),
+        radial-gradient(circle at 90% 20%, rgba(124, 58, 237, 0.10), transparent 28%),
+        var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       overflow-x: hidden;
     }
 
-    a { color: inherit; }
-    button, input { font: inherit; }
-    button { -webkit-tap-highlight-color: transparent; }
-
-    .sr-only {
-      position: absolute; width: 1px; height: 1px; padding: 0;
-      margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
-      white-space: nowrap; border: 0;
+    a {
+      text-decoration: none;
+      color: inherit;
     }
-    .hidden { display: none !important; }
 
-    /* ── Auth screen ── */
-    #login-screen {
-      position: fixed; inset: 0; display: grid; place-items: center;
-      background:
-        radial-gradient(circle at top left, rgba(10,132,255,0.16), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(34,197,94,0.10), transparent 28%),
-        linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%);
-      z-index: 1000;
-      transition: opacity .35s ease, visibility .35s ease;
+    .container {
+      width: min(1160px, calc(100% - 40px));
+      margin: auto;
     }
-    #login-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    .auth-card {
-      width: min(92vw, 420px);
-      background: rgba(255,255,255,0.76);
-      border: 1px solid rgba(255,255,255,0.7);
-      backdrop-filter: blur(18px);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      padding: 34px 28px;
+    /* NAVBAR */
+
+    nav {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 750;
+      font-size: 21px;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      font-size: 19px;
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: #475467;
+      font-size: 14px;
+      font-weight: 550;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-button {
+      padding: 10px 17px;
+      border-radius: 10px;
+      background: #111827;
+      color: white !important;
+      transition: 0.2s ease;
+    }
+
+    .nav-button:hover {
+      transform: translateY(-1px);
+      background: #000;
+    }
+
+    /* HERO */
+
+    .hero {
       text-align: center;
-      animation: rise .7s cubic-bezier(.2,.8,.2,1) both;
-    }
-    .brand-badge {
-      width: 92px; height: 92px; border-radius: 24px; object-fit: cover;
-      box-shadow: 0 16px 35px rgba(10,132,255,0.16); margin-bottom: 18px;
-    }
-    .auth-card h1 {
-      margin: 0; font-size: clamp(1.9rem, 3vw, 2.5rem);
-      line-height: 1; letter-spacing: -0.04em;
-      background: linear-gradient(135deg, var(--primary), #51a8ff);
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .auth-card p { margin: 12px 0 24px; color: var(--text-muted); line-height: 1.6; font-size: 1rem; }
-    .auth-actions { display: grid; gap: 12px; }
-    .auth-btn {
-      width: 100%; border: 0; border-radius: 16px; padding: 15px 18px;
-      font-weight: 700; display: inline-flex; align-items: center;
-      justify-content: center; gap: 10px; cursor: pointer;
-      transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
-    }
-    .auth-btn:hover { transform: translateY(-2px); }
-    .google-btn {
-      color: #fff; background: linear-gradient(135deg, #111827, #000000);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.16);
-    }
-    .google-btn:hover { box-shadow: 0 16px 30px rgba(0,0,0,0.20); }
-    .guest-btn { color: var(--text); background: rgba(255,255,255,0.82); border: 1px solid var(--border); }
-    .guest-btn:hover { background: #fff; }
-    .auth-footnote { margin-top: 16px; font-size: .9rem; color: var(--text-muted); line-height: 1.5; }
-
-    /* ── Focus rings ── */
-    .auth-btn:focus-visible, .icon-btn:focus-visible, .input:focus-visible,
-    .search-input:focus-visible, .link-card:focus-visible, .folder-card:focus-visible,
-    .suggestion-card:focus-visible, .topbar-brand:focus-visible,
-    .primary-btn:focus-visible, .ghost-btn:focus-visible, .danger-btn:focus-visible {
-      outline: none; box-shadow: var(--ring);
+      padding: 92px 0 65px;
+      position: relative;
     }
 
-    /* ── App shell ── */
-    header {
-      position: sticky; top: 0; z-index: 200;
-      display: none; align-items: center; justify-content: space-between;
-      gap: 16px; padding: 15px clamp(16px, 3vw, 32px);
-      background: rgba(246, 249, 255, 0.82); backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(16,24,40,0.06);
-    }
-    .topbar-brand {
-      display: inline-flex; align-items: center; gap: 12px;
-      text-decoration: none; min-width: 0;
-    }
-    .topbar-brand img {
-      width: 42px; height: 42px; border-radius: 12px; object-fit: cover;
-      flex: 0 0 auto; box-shadow: 0 8px 18px rgba(10,132,255,0.12);
-    }
-    .topbar-brand strong {
-      display: block; font-size: 1.05rem; letter-spacing: -0.03em;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .topbar-brand span {
-      display: block; font-size: .83rem; color: var(--text-muted);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .topbar-actions {
-      display: flex; align-items: center; gap: 10px;
-      flex-wrap: wrap; justify-content: flex-end;
-    }
-    .icon-btn, .primary-btn, .ghost-btn, .danger-btn {
-      border: 0; border-radius: 14px; cursor: pointer;
-      transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease, opacity .2s ease;
-    }
-    .icon-btn {
-      width: 44px; height: 44px; display: grid; place-items: center;
-      background: rgba(255,255,255,0.8); border: 1px solid var(--border);
-    }
-    .primary-btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
-      color: #fff; font-weight: 800;
-      box-shadow: 0 14px 28px rgba(10,132,255,0.22); padding: 14px 18px;
-    }
-    .primary-btn:hover { transform: translateY(-2px); }
-    .ghost-btn {
-      background: rgba(255,255,255,0.78); border: 1px solid var(--border);
-      color: var(--text); padding: 14px 18px; font-weight: 700;
-    }
-    .ghost-btn:hover, .icon-btn:hover { transform: translateY(-2px); background: #fff; }
-    .danger-btn {
-      background: #fff5f5; color: var(--danger);
-      border: 1px solid rgba(239,68,68,0.18); padding: 14px 18px; font-weight: 800;
-    }
-    .danger-btn:hover { transform: translateY(-2px); background: #ffecec; }
-
-    main {
-      display: none; width: min(1180px, calc(100vw - 32px));
-      margin: 24px auto 28px; flex: 1;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(37, 99, 235, 0.15);
+      background: rgba(255, 255, 255, 0.7);
+      color: #3157a6;
+      font-size: 13px;
+      font-weight: 650;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 5px 20px rgba(15, 23, 42, 0.04);
     }
 
-    .hero-grid {
-      display: grid; grid-template-columns: 1.35fr .65fr;
-      gap: 18px; margin-bottom: 18px;
-    }
-    .panel {
-      background: var(--surface); border: 1px solid rgba(255,255,255,0.72);
-      backdrop-filter: blur(18px); border-radius: var(--radius); box-shadow: var(--shadow);
-    }
-    .intro-panel { padding: 22px; display: grid; gap: 8px; }
-    .intro-panel h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 1.8rem); letter-spacing: -0.03em; }
-    .intro-panel p { margin: 0; color: var(--text-muted); line-height: 1.6; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .stat-card {
-      padding: 16px; border-radius: 18px; background: var(--surface-solid);
-      border: 1px solid var(--border); min-height: 92px;
-    }
-    .stat-card strong { display: block; font-size: 1.2rem; margin-bottom: 4px; }
-    .stat-card span { color: var(--text-muted); font-size: .88rem; line-height: 1.4; }
-
-    .search-panel { margin-bottom: 16px; padding: 18px; }
-    .search-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
-    .search-input, .input {
-      width: 100%; border: 1px solid rgba(16,24,40,0.10);
-      background: rgba(255,255,255,0.92); color: var(--text);
-      border-radius: 16px; padding: 14px 16px; outline: none;
-      transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
-    }
-    .search-input::placeholder, .input::placeholder { color: #98a2b3; }
-    .search-input:focus, .input:focus {
-      border-color: rgba(10,132,255,0.55); box-shadow: var(--ring); background: #fff;
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
     }
 
-    /* ── Composer panel with folder toggle ── */
-    .composer-panel { padding: 18px; margin-bottom: 18px; }
-    .composer-tabs {
-      display: flex; gap: 8px; margin-bottom: 16px;
-    }
-    .tab-btn {
-      padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.7); font-weight: 700; font-size: .88rem;
-      cursor: pointer; transition: all .2s ease; color: var(--text-muted);
-    }
-    .tab-btn.active {
-      background: var(--primary); color: #fff; border-color: var(--primary);
-      box-shadow: 0 6px 16px rgba(10,132,255,0.22);
-    }
-    .tab-btn.folder-tab.active {
-      background: var(--folder-accent); border-color: var(--folder-accent);
-      box-shadow: 0 6px 16px rgba(124,58,237,0.22);
+    h1 {
+      max-width: 850px;
+      margin: 25px auto 20px;
+      font-size: clamp(48px, 7vw, 82px);
+      line-height: 0.98;
+      letter-spacing: -4px;
+      font-weight: 850;
     }
 
-    .composer-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; }
-    .composer-folder-grid { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
-    .composer-pane { display: none; }
-    .composer-pane.active { display: block; }
-
-    .section-title {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; margin: 0 0 14px;
-    }
-    .section-title h3 { margin: 0; font-size: 1rem; letter-spacing: -0.02em; }
-    .section-title small { color: var(--text-muted); }
-
-    .suggestions-panel, .links-panel { padding: 18px; margin-bottom: 18px; }
-
-    .cards-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(126px, 1fr)); gap: 14px;
+    h1 span {
+      background: linear-gradient(110deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    /* ── Link card (regular) ── */
-    .suggestion-card, .link-card {
-      position: relative; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 10px;
-      text-align: center; min-height: 120px; padding: 16px 12px;
-      border-radius: 18px; background: rgba(255,255,255,0.92);
-      border: 1px solid rgba(16,24,40,0.08);
-      box-shadow: 0 8px 24px rgba(15,23,42,0.05); cursor: pointer;
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-      animation: pop .22s ease both; overflow: hidden;
-    }
-    .suggestion-card:hover, .link-card:hover {
-      transform: translateY(-4px); border-color: rgba(10,132,255,0.30);
-      box-shadow: 0 16px 28px rgba(10,132,255,0.12);
+    .hero-text {
+      max-width: 650px;
+      margin: auto;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
     }
 
-    /* ── Folder card ── */
-    .folder-card {
-      position: relative; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 8px;
-      text-align: center; min-height: 120px; padding: 16px 12px;
-      border-radius: 18px; cursor: pointer;
-      background: linear-gradient(145deg, rgba(124,58,237,0.07), rgba(124,58,237,0.03));
-      border: 1.5px solid rgba(124,58,237,0.18);
-      box-shadow: 0 8px 24px rgba(124,58,237,0.08);
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-      animation: pop .22s ease both; overflow: hidden;
+    .hero-actions {
+      margin-top: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 13px;
+      flex-wrap: wrap;
     }
-    .folder-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(124,58,237,0.40);
-      box-shadow: 0 16px 28px rgba(124,58,237,0.18);
+
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 15px 23px;
+      border-radius: 13px;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.27);
+      transition: 0.22s ease;
     }
-    .folder-icon-wrap {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--folder-accent), #9f67fa);
-      display: grid; place-items: center; font-size: 1.3rem;
-      box-shadow: 0 8px 16px rgba(124,58,237,0.25);
+
+    .primary-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 17px 35px rgba(37, 99, 235, 0.32);
     }
-    .folder-count-badge {
-      position: absolute; top: 8px; right: 8px;
-      background: var(--folder-accent); color: #fff;
-      font-size: .7rem; font-weight: 800; border-radius: 999px;
-      padding: 2px 7px; line-height: 1.6;
+
+    .secondary-button {
+      padding: 15px 21px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #344054;
+      font-weight: 650;
+      font-size: 15px;
+      backdrop-filter: blur(12px);
+      transition: 0.2s ease;
     }
-    .folder-card .card-name { font-size: .88rem; font-weight: 700; line-height: 1.25; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .folder-card .card-sub { font-size: .75rem; color: var(--folder-accent); font-weight: 600; }
+
+    .secondary-button:hover {
+      background: white;
+      transform: translateY(-2px);
+    }
+
+    .no-login {
+      margin-top: 15px;
+      color: #667085;
+      font-size: 13px;
+    }
+
+    .no-login strong {
+      color: #344054;
+    }
+
+    /* DASHBOARD PREVIEW */
+
+    .preview-wrap {
+      margin-top: 72px;
+      position: relative;
+    }
+
+    .glow {
+      position: absolute;
+      width: 500px;
+      height: 300px;
+      background: rgba(79, 70, 229, 0.17);
+      filter: blur(90px);
+      left: 50%;
+      top: 30px;
+      transform: translateX(-50%);
+      z-index: -1;
+    }
+
+    .browser {
+      background: white;
+      border: 1px solid rgba(15, 23, 42, 0.10);
+      border-radius: 19px;
+      overflow: hidden;
+      box-shadow:
+        0 35px 90px rgba(15, 23, 42, 0.14),
+        0 8px 30px rgba(15, 23, 42, 0.06);
+      text-align: left;
+      transform: perspective(1200px) rotateX(1.5deg);
+    }
+
+    .browser-top {
+      height: 47px;
+      border-bottom: 1px solid #edf0f4;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 16px;
+      background: #fbfcfe;
+    }
+
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d0d5dd;
+    }
+
+    .browser-address {
+      margin-left: 13px;
+      height: 27px;
+      flex: 1;
+      max-width: 470px;
+      background: #f2f4f7;
+      border-radius: 7px;
+    }
+
+    .dashboard {
+      padding: 27px;
+      background: #f8fafc;
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .dash-title {
+      font-size: 20px;
+      font-weight: 750;
+    }
+
+    .dash-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .mini-button {
+      width: 31px;
+      height: 31px;
+      border-radius: 8px;
+      background: white;
+      border: 1px solid #e5e7eb;
+    }
+
+    .search-box {
+      background: white;
+      border: 1px solid #e4e7ec;
+      border-radius: 11px;
+      padding: 13px 15px;
+      color: #98a2b3;
+      font-size: 13px;
+      margin-bottom: 21px;
+      box-shadow: 0 3px 8px rgba(16, 24, 40, 0.03);
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #667085;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .dash-card {
+      min-height: 82px;
+      background: white;
+      border: 1px solid #e8ebef;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 3px 10px rgba(16, 24, 40, 0.025);
+    }
 
     .card-icon {
-      width: 44px; height: 44px; border-radius: 12px; object-fit: contain;
-      background: var(--surface-muted); border: 1px solid rgba(16,24,40,0.06);
+      width: 27px;
+      height: 27px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: #eef4ff;
+      color: #2563eb;
+      margin-bottom: 10px;
+      font-size: 13px;
     }
-    .card-name { font-size: .88rem; font-weight: 700; line-height: 1.25; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card-url { font-size: .77rem; color: var(--text-muted); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .card-x {
-      position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
-      border-radius: 999px; border: 0; display: none; align-items: center;
-      justify-content: center; background: #fff1f2; color: var(--danger);
-      cursor: pointer; box-shadow: 0 8px 16px rgba(239,68,68,0.12);
+    .card-name {
+      font-size: 13px;
+      font-weight: 650;
     }
-    .card-x:hover { transform: scale(1.08); }
-    .suggestion-card:hover .card-x,
-    .link-card:hover .card-x,
-    .folder-card:hover .card-x { display: inline-flex; }
 
-    .empty-state {
-      grid-column: 1 / -1; text-align: center; padding: 44px 16px; color: var(--text-muted);
+    .card-url {
+      margin-top: 3px;
+      color: #98a2b3;
+      font-size: 10px;
     }
-    .empty-state .emoji { font-size: 2.5rem; margin-bottom: 10px; }
-    .empty-state h4 { margin: 0 0 6px; color: var(--text); font-size: 1.08rem; }
-    .empty-state p { margin: 0; line-height: 1.6; }
+
+    /* FEATURES */
+
+    .features {
+      padding: 100px 0;
+    }
+
+    .section-heading {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 43px;
+    }
+
+    .section-heading h2 {
+      font-size: clamp(32px, 5vw, 46px);
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .feature {
+      padding: 27px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      backdrop-filter: blur(16px);
+      transition: 0.25s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      background: white;
+    }
+
+    .feature-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: #eef4ff;
+      font-size: 20px;
+      margin-bottom: 18px;
+    }
+
+    .feature h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    /* CTA */
+
+    .cta {
+      padding: 30px 0 100px;
+    }
+
+    .cta-box {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 75px 30px;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #111827, #1e1b4b);
+      color: white;
+      box-shadow: 0 30px 70px rgba(15, 23, 42, 0.18);
+    }
+
+    .cta-box::before,
+    .cta-box::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    .cta-box::before {
+      width: 280px;
+      height: 280px;
+      background: rgba(37, 99, 235, 0.28);
+      top: -160px;
+      left: -70px;
+    }
+
+    .cta-box::after {
+      width: 300px;
+      height: 300px;
+      background: rgba(124, 58, 237, 0.22);
+      bottom: -190px;
+      right: -60px;
+    }
+
+    .cta-box h2 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(30px, 5vw, 48px);
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+    }
+
+    .cta-box p {
+      position: relative;
+      z-index: 1;
+      color: #cbd5e1;
+      margin-bottom: 27px;
+    }
+
+    .cta-box .primary-button {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* FOOTER */
 
     footer {
-      display: none; padding: 18px 16px 30px; text-align: center; color: var(--text-muted);
-    }
-    footer .footer-inner {
-      width: min(1180px, calc(100vw - 32px)); margin: 0 auto;
-      background: rgba(255,255,255,0.6); border: 1px solid rgba(16,24,40,0.08);
-      border-radius: 20px; box-shadow: 0 10px 26px rgba(15,23,42,0.05); padding: 16px;
-    }
-    footer .footer-links {
-      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 10px;
-    }
-    footer a { color: var(--primary-strong); text-decoration: none; font-weight: 700; }
-
-    .toast {
-      position: fixed; right: 18px; bottom: 18px; z-index: 300;
-      display: inline-flex; align-items: center; gap: 10px;
-      max-width: min(92vw, 360px); padding: 12px 14px; border-radius: 14px;
-      color: #fff; background: rgba(16,24,40,0.92);
-      box-shadow: 0 18px 44px rgba(15,23,42,0.22);
-      opacity: 0; transform: translateY(8px); pointer-events: none;
-      transition: opacity .22s ease, transform .22s ease;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-    .toast.success { background: rgba(34,197,94,0.96); }
-    .toast.error { background: rgba(239,68,68,0.96); }
-    .toast.warning { background: rgba(245,158,11,0.96); }
-    .toast.syncing { background: rgba(10,132,255,0.96); }
-
-    .spinner {
-      width: 14px; height: 14px; border-radius: 999px;
-      border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
-      animation: spin .8s linear infinite; flex: 0 0 auto;
+      border-top: 1px solid rgba(15, 23, 42, 0.07);
+      padding: 28px 0;
     }
 
-    /* ── Modal ── */
-    .modal-backdrop {
-      position: fixed; inset: 0; z-index: 400; display: none;
-      align-items: center; justify-content: center; padding: 16px;
-      background: rgba(15,23,42,0.42); backdrop-filter: blur(8px);
-    }
-    .modal-backdrop.show { display: flex; }
-    .modal {
-      width: min(92vw, 520px); background: rgba(255,255,255,0.96);
-      border-radius: 24px; box-shadow: 0 28px 70px rgba(15,23,42,0.26);
-      border: 1px solid rgba(255,255,255,0.7); overflow: hidden;
-      animation: rise .2s ease both;
-    }
-    .modal header {
-      position: static; display: flex; padding: 18px 20px;
-      background: transparent; border: 0; backdrop-filter: none;
-    }
-    .modal-body { padding: 20px; display: grid; gap: 14px; }
-    .modal-body p { margin: 0; color: var(--text-muted); line-height: 1.6; }
-    .modal-actions {
-      display: flex; gap: 10px; justify-content: flex-end;
-      flex-wrap: wrap; padding: 0 20px 20px;
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      color: #98a2b3;
+      font-size: 12px;
     }
 
-    /* ── Folder modal specific ── */
-    .modal.folder-modal { width: min(92vw, 640px); }
-    .folder-modal-header {
-      display: flex; align-items: center; gap: 14px;
-      padding: 20px 20px 0;
-    }
-    .folder-modal-icon {
-      width: 48px; height: 48px; border-radius: 14px;
-      background: linear-gradient(135deg, var(--folder-accent), #9f67fa);
-      display: grid; place-items: center; font-size: 1.4rem; flex: 0 0 auto;
-      box-shadow: 0 8px 18px rgba(124,58,237,0.25);
-    }
-    .folder-modal-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
-    .folder-modal-meta { font-size: .85rem; color: var(--text-muted); margin: 2px 0 0; }
-
-    .folder-composer {
-      display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;
-      padding: 14px 20px; border-bottom: 1px solid var(--border);
+    .footer-links {
+      display: flex;
+      gap: 20px;
     }
 
-    .folder-links-list {
-      padding: 14px 20px; max-height: 340px; overflow-y: auto;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .folder-link-row {
-      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
-      border-radius: 14px; background: rgba(255,255,255,0.9);
-      border: 1px solid rgba(16,24,40,0.08);
-      transition: border-color .2s ease, box-shadow .2s ease;
-      cursor: pointer; text-decoration: none;
-    }
-    .folder-link-row:hover {
-      border-color: rgba(10,132,255,0.30);
-      box-shadow: 0 6px 18px rgba(10,132,255,0.09);
-    }
-    .folder-link-row img {
-      width: 32px; height: 32px; border-radius: 8px; object-fit: contain;
-      background: var(--surface-muted); border: 1px solid rgba(16,24,40,0.06); flex: 0 0 auto;
-    }
-    .folder-link-info { flex: 1; min-width: 0; }
-    .folder-link-name { font-size: .9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .folder-link-url { font-size: .78rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .folder-link-del {
-      width: 30px; height: 30px; border-radius: 999px; border: 0;
-      background: #fff1f2; color: var(--danger); cursor: pointer;
-      display: grid; place-items: center; flex: 0 0 auto;
-      transition: transform .15s ease; font-size: 1rem;
-    }
-    .folder-link-del:hover { transform: scale(1.1); }
-
-    .folder-empty {
-      text-align: center; padding: 28px 16px; color: var(--text-muted); font-size: .9rem;
+    .footer-links a:hover {
+      color: #344054;
     }
 
-    /* ── Import drop zone ── */
-    .drop-zone {
-      border: 2px dashed rgba(10,132,255,0.30); border-radius: 16px;
-      padding: 28px 20px; text-align: center; cursor: pointer;
-      transition: border-color .2s ease, background .2s ease;
-      background: rgba(10,132,255,0.03);
-    }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: var(--primary); background: rgba(10,132,255,0.07);
-    }
-    .drop-zone p { margin: 8px 0 0; color: var(--text-muted); font-size: .9rem; }
-    .drop-zone .drop-icon { font-size: 2rem; }
+    /* ANIMATIONS */
 
-    .import-options { display: flex; gap: 10px; flex-wrap: wrap; }
-    .import-option-btn {
-      flex: 1; min-width: 120px; padding: 12px 16px; border-radius: 14px;
-      border: 1px solid var(--border); background: rgba(255,255,255,0.8);
-      font-weight: 700; font-size: .9rem; cursor: pointer;
-      transition: all .2s ease; color: var(--text);
-    }
-    .import-option-btn:hover { background: #fff; transform: translateY(-1px); }
-    .import-option-btn.selected {
-      border-color: var(--primary); background: var(--primary-soft); color: var(--primary);
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .settings-list { display: grid; gap: 10px; }
-    .settings-item {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; padding: 14px 16px; border-radius: 16px;
-      background: #fff; border: 1px solid rgba(16,24,40,0.08);
+    .hero > * {
+      animation: fadeUp 0.65s ease both;
     }
-    .settings-item strong { display: block; font-size: .96rem; }
-    .settings-item small { display: block; color: var(--text-muted); margin-top: 2px; }
 
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(10px) scale(.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    .hero h1 {
+      animation-delay: 0.08s;
     }
-    @keyframes pop {
-      from { opacity: 0; transform: scale(.96); }
-      to { opacity: 1; transform: scale(1); }
+
+    .hero-text {
+      animation-delay: 0.15s;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; } }
+    .hero-actions {
+      animation-delay: 0.22s;
+    }
 
-    @media (max-width: 760px) {
-      header { align-items: flex-start; flex-direction: column; }
-      .topbar-actions { width: 100%; justify-content: space-between; }
-      .topbar-brand strong { font-size: .98rem; }
-      .topbar-brand span { font-size: .8rem; }
-      .search-row, .composer-grid, .composer-folder-grid { grid-template-columns: 1fr; }
-      .cards-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
-      .stats-grid { grid-template-columns: 1fr; }
-      .folder-composer { grid-template-columns: 1fr; }
+    .preview-wrap {
+      animation: fadeUp 0.8s ease 0.28s both;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 800px) {
+      .container {
+        width: min(100% - 28px, 600px);
+      }
+
+      nav {
+        height: 68px;
+      }
+
+      .nav-links a:not(.nav-button) {
+        display: none;
+      }
+
+      .hero {
+        padding: 65px 0 35px;
+      }
+
+      h1 {
+        letter-spacing: -2.5px;
+      }
+
+      .hero-text {
+        font-size: 16px;
+      }
+
+      .preview-wrap {
+        margin-top: 48px;
+      }
+
+      .browser {
+        border-radius: 14px;
+      }
+
+      .dashboard {
+        padding: 15px;
+      }
+
+      .dash-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .features {
+        padding: 70px 0;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        text-align: center;
+      }
     }
 
     @media (max-width: 480px) {
-      main { width: min(100vw - 20px, 1180px); margin-top: 18px; }
-      .auth-card { padding: 28px 18px; border-radius: 24px; }
-      .brand-badge { width: 76px; height: 76px; }
-      .cards-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
-      .suggestion-card, .link-card, .folder-card { min-height: 112px; padding: 14px 10px; }
-      .card-icon { width: 40px; height: 40px; }
+      .brand {
+        font-size: 18px;
+      }
+
+      .brand-icon {
+        width: 34px;
+        height: 34px;
+      }
+
+      .hero {
+        padding-top: 55px;
+      }
+
+      h1 {
+        font-size: 47px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .primary-button,
+      .secondary-button {
+        width: 100%;
+      }
+
+      .browser-address {
+        display: none;
+      }
+
+      .dash-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .cta-box {
+        padding: 55px 20px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- ── Auth Screen ── -->
-<section id="login-screen" aria-label="Authentication">
-  <div class="auth-card">
-    <img class="brand-badge" src="https://mohakdev1220.github.io/chromeportal/logo.png" alt="ChromePortal logo" />
-    <h1>ChromePortal</h1>
-    <p>Save, search, and sync your favorite links in one clean workspace.</p>
-    <div class="auth-actions">
-      <button class="auth-btn google-btn" type="button" id="google-login-btn">🔐 Continue with Google</button>
-      <button class="auth-btn guest-btn" type="button" id="guest-login-btn">👤 Try Guest Mode (Local)</button>
-    </div>
-    <div class="auth-footnote">Guest mode stays on this device. Google mode syncs across devices through Firebase.</div>
-  </div>
-</section>
+  <!-- NAVIGATION -->
 
-<!-- ── Header ── -->
-<header id="main-header" aria-label="Top navigation">
-  <a href="#" class="topbar-brand" id="brand-home" aria-label="ChromePortal home">
-    <img src="https://mohakdev1220.github.io/chromeportal/logo.png" alt="ChromePortal" />
-    <div style="min-width:0">
-      <strong>ChromePortal</strong>
-      <span id="session-label">Smart Link Hub</span>
-    </div>
-  </a>
-  <div class="topbar-actions">
-    <button class="icon-btn" type="button" id="settings-btn" title="Settings" aria-label="Settings">⚙️</button>
-    <button class="ghost-btn" type="button" id="import-btn" title="Import links" aria-label="Import links">Import</button>
-    <button class="ghost-btn" type="button" id="export-btn" title="Export links" aria-label="Export links">Export</button>
-    <button class="danger-btn" type="button" id="logout-btn">Logout</button>
-  </div>
-</header>
+  <div class="container">
+    <nav>
+      <a href="#" class="brand">
+        <span class="brand-icon">⚡</span>
+        <span>ChromePortal</span>
+      </a>
 
-<!-- ── Main App ── -->
-<main id="app" aria-label="ChromePortal dashboard">
-  <section class="hero-grid">
-    <div class="panel intro-panel">
-      <h2>Manage your daily web stack without clutter.</h2>
-      <p>Keep useful destinations pinned, search them instantly, and organize related links in folders. Syncs across devices when signed in.</p>
-    </div>
-    <div class="panel intro-panel">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <strong id="stat-links">0</strong>
-          <span>Saved links</span>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#preview">Preview</a>
+        <a href="main/" class="nav-button">Get Started</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- HERO -->
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+
+        <div class="badge">
+          <span class="badge-dot"></span>
+          No login required
         </div>
-        <div class="stat-card">
-          <strong id="stat-folders">0</strong>
-          <span>Folders</span>
+
+        <h1>
+          Your web, <span>organized.</span>
+        </h1>
+
+        <p class="hero-text">
+          Manage your daily web stack without clutter.
+          Save useful links, organize them into folders,
+          and find everything instantly.
+        </p>
+
+        <div class="hero-actions">
+          <a href="main/" class="primary-button">
+            Get Started
+            <span>→</span>
+          </a>
+
+          <a href="#features" class="secondary-button">
+            Explore features
+          </a>
         </div>
-        <div class="stat-card">
-          <strong id="stat-mode">Guest</strong>
-          <span>Current mode</span>
+
+        <p class="no-login">
+          <strong>No account needed.</strong>
+          Start using ChromePortal instantly.
+          Google login is only needed for optional sync.
+        </p>
+
+        <!-- DASHBOARD PREVIEW -->
+
+        <div class="preview-wrap" id="preview">
+          <div class="glow"></div>
+
+          <div class="browser">
+
+            <div class="browser-top">
+              <span class="browser-dot"></span>
+              <span class="browser-dot"></span>
+              <span class="browser-dot"></span>
+
+              <div class="browser-address"></div>
+            </div>
+
+            <div class="dashboard">
+
+              <div class="dash-header">
+                <div class="dash-title">
+                  ChromePortal
+                </div>
+
+                <div class="dash-controls">
+                  <div class="mini-button"></div>
+                  <div class="mini-button"></div>
+                </div>
+              </div>
+
+              <div class="search-box">
+                🔍 &nbsp; Search your links...
+              </div>
+
+              <div class="section-label">
+                Your Links
+              </div>
+
+              <div class="dash-grid">
+
+                <div class="dash-card">
+                  <div class="card-icon">G</div>
+                  <div class="card-name">Google</div>
+                  <div class="card-url">google.com</div>
+                </div>
+
+                <div class="dash-card">
+                  <div class="card-icon">C</div>
+                  <div class="card-name">ChatGPT</div>
+                  <div class="card-url">chatgpt.com</div>
+                </div>
+
+                <div class="dash-card">
+                  <div class="card-icon">⌘</div>
+                  <div class="card-name">GitHub</div>
+                  <div class="card-url">github.com</div>
+                </div>
+
+                <div class="dash-card">
+                  <div class="card-icon">F</div>
+                  <div class="card-name">Figma</div>
+                  <div class="card-url">figma.com</div>
+                </div>
+
+              </div>
+
+              <br />
+
+              <div class="section-label">
+                Folders
+              </div>
+
+              <div class="dash-grid">
+
+                <div class="dash-card">
+                  <div class="card-icon">📁</div>
+                  <div class="card-name">Development</div>
+                  <div class="card-url">6 links</div>
+                </div>
+
+                <div class="dash-card">
+                  <div class="card-icon">📁</div>
+                  <div class="card-name">AI Tools</div>
+                  <div class="card-url">8 links</div>
+                </div>
+
+                <div class="dash-card">
+                  <div class="card-icon">📁</div>
+                  <div class="card-name">Social</div>
+                  <div class="card-url">5 links</div>
+                </div>
+
+                <div class="dash-card">
+                  <div class="card-icon">+</div>
+                  <div class="card-name">Add new</div>
+                  <div class="card-url">Link or folder</div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
         </div>
+
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Search -->
-  <section class="panel search-panel" aria-label="Search links">
-    <div class="section-title">
-      <h3>Search</h3>
-      <small id="search-meta">Type to filter your saved links</small>
-    </div>
-    <div class="search-row">
-      <input id="search-input" class="search-input" type="search" placeholder="Search by name or URL..." autocomplete="off" />
-      <button class="ghost-btn" type="button" id="clear-search-btn">Clear</button>
-    </div>
-  </section>
+    <!-- FEATURES -->
 
-  <!-- Composer -->
-  <section class="panel composer-panel" aria-label="Add link or folder">
-    <div class="section-title">
-      <h3>Add new</h3>
-      <div class="composer-tabs">
-        <button class="tab-btn active" type="button" data-tab="link">🔗 Link</button>
-        <button class="tab-btn folder-tab" type="button" data-tab="folder">📁 Folder</button>
-      </div>
-    </div>
+    <section class="features" id="features">
+      <div class="container">
 
-    <!-- Link pane -->
-    <div class="composer-pane active" id="pane-link">
-      <div class="composer-grid">
-        <input id="site-name" class="input" type="text" placeholder="Name (e.g., Google)" autocomplete="off" />
-        <input id="site-url" class="input" type="text" placeholder="URL (e.g., google.com)" autocomplete="off" />
-        <button class="primary-btn" type="button" id="create-btn">➕ Create</button>
-      </div>
-    </div>
-
-    <!-- Folder pane -->
-    <div class="composer-pane" id="pane-folder">
-      <div class="composer-folder-grid">
-        <input id="folder-name" class="input" type="text" placeholder="Folder name (e.g., My Projects)" autocomplete="off" />
-        <button class="primary-btn" style="background: linear-gradient(135deg,#7c3aed,#9f67fa); box-shadow: 0 14px 28px rgba(124,58,237,0.22);" type="button" id="create-folder-btn">📁 Create Folder</button>
-      </div>
-      <p style="margin: 10px 0 0; font-size:.85rem; color:var(--text-muted);">After creating, click the folder card to add links inside it.</p>
-    </div>
-  </section>
-
-  <!-- Links & Folders -->
-  <section class="panel links-panel" aria-label="Your links and folders">
-    <div class="section-title">
-      <h3>📌 Your Links & Folders</h3>
-      <small id="results-count">0 items</small>
-    </div>
-    <div class="cards-grid" id="links-grid"></div>
-  </section>
-
-  <!-- Suggestions -->
-  <section class="panel suggestions-panel" aria-label="Popular suggestions">
-    <div class="section-title">
-      <h3>💡 Popular Suggestions</h3>
-      <small>Tap a card to add it</small>
-    </div>
-    <div class="cards-grid" id="suggestions-grid"></div>
-  </section>
-</main>
-
-<footer id="footer">
-  <div class="footer-inner">
-    <div>ChromePortal • built for quick access, tidy organization, and simple syncing.</div>
-    <div class="footer-links">
-      <a href="https://mohakdev1220.github.io/websites_link/" target="_blank" rel="noopener noreferrer">Other Websites</a>
-      <a href="#" id="privacy-link">Privacy</a>
-    </div>
-  </div>
-</footer>
-
-<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-
-<!-- ── Generic Modal ── -->
-<div id="modal-backdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" id="generic-modal">
-    <header>
-      <div class="section-title" style="margin:0;width:100%">
-        <h3 id="modal-title">Settings</h3>
-        <button class="icon-btn" type="button" id="modal-close-btn" aria-label="Close">✕</button>
-      </div>
-    </header>
-    <div class="modal-body" id="modal-body"></div>
-    <div class="modal-actions" id="modal-actions"></div>
-  </div>
-</div>
-
-<!-- ── Folder Modal ── -->
-<div id="folder-modal-backdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal folder-modal" role="dialog" aria-modal="true" aria-labelledby="folder-modal-title">
-    <div class="folder-modal-header">
-      <div class="folder-modal-icon">📁</div>
-      <div>
-        <h3 class="folder-modal-title" id="folder-modal-title">Folder</h3>
-        <p class="folder-modal-meta" id="folder-modal-meta">0 links</p>
-      </div>
-      <button class="icon-btn" type="button" id="folder-modal-close" aria-label="Close folder" style="margin-left:auto">✕</button>
-    </div>
-
-    <div class="folder-composer" id="folder-composer">
-      <input id="fl-name" class="input" type="text" placeholder="Link name" autocomplete="off" style="font-size:.9rem;padding:11px 14px" />
-      <input id="fl-url" class="input" type="text" placeholder="URL (e.g., github.com/user)" autocomplete="off" style="font-size:.9rem;padding:11px 14px" />
-      <button class="primary-btn" type="button" id="fl-add-btn" style="padding:11px 16px; font-size:.9rem;">➕ Add</button>
-    </div>
-
-    <div class="folder-links-list" id="folder-links-list"></div>
-
-    <div class="modal-actions" style="padding: 12px 20px 20px; border-top: 1px solid var(--border);">
-      <button class="danger-btn" type="button" id="folder-delete-btn">🗑 Delete Folder</button>
-      <button class="primary-btn" type="button" id="folder-done-btn">Done</button>
-    </div>
-  </div>
-</div>
-
-<!-- Hidden file input for import -->
-<input type="file" id="import-file-input" accept=".json" style="display:none" />
-
-<script>
-(() => {
-  'use strict';
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAzl-3ak-UhQZj-80RcUXMJwF22m9sDevo",
-    authDomain: "chromeportal-e5b55.firebaseapp.com",
-    databaseURL: "https://chromeportal-e5b55-default-rtdb.firebaseio.com",
-    projectId: "chromeportal-e5b55",
-    storageBucket: "chromeportal-e5b55.firebasestorage.app",
-    messagingSenderId: "349440663810",
-    appId: "1:349440663810:web:83331fe134e7568560e21b",
-    measurementId: "G-18FF1S3JWH"
-  };
-
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  const STORAGE_KEYS = {
-    guestData: 'portal_guest_data',
-    hiddenSuggestions: 'hidden_suggestions',
-  };
-
-  const suggestedLinks = [
-    { name: 'YouTube', url: 'https://youtube.com' },
-    { name: 'WhatsApp', url: 'https://web.whatsapp.com' },
-    { name: 'Claude', url: 'https://claude.ai' },
-    { name: 'Sarvam AI', url: 'https://sarvam.ai' },
-    { name: 'Gmail', url: 'https://mail.google.com' },
-    { name: 'X', url: 'https://x.com' },
-    { name: 'GitHub', url: 'https://github.com' },
-    { name: 'LinkedIn', url: 'https://linkedin.com' },
-    { name: 'Reddit', url: 'https://reddit.com' },
-    { name: 'Figma', url: 'https://figma.com' },
-    { name: 'Discord', url: 'https://discord.com' },
-    { name: 'Notion', url: 'https://notion.so' }
-  ].map(item => ({ ...item, icon: getFaviconUrl(item.url) }));
-
-  // State: links are now { id, name, url, favicon, createdAt }
-  //        folders are  { id, name, createdAt, links: [...] }
-  //        items array holds both — differentiated by item.type === 'folder'
-  const state = {
-    currentUser: null,
-    isGuest: false,
-    items: [],          // all items (links + folders)
-    hiddenSuggestions: loadHiddenSuggestions(),
-    unsubscribe: null,
-    toastTimer: null,
-    searchQuery: '',
-    activeFolderId: null,   // which folder modal is open
-  };
-
-  const els = {
-    loginScreen: document.getElementById('login-screen'),
-    mainHeader: document.getElementById('main-header'),
-    app: document.getElementById('app'),
-    footer: document.getElementById('footer'),
-    sessionLabel: document.getElementById('session-label'),
-    googleLoginBtn: document.getElementById('google-login-btn'),
-    guestLoginBtn: document.getElementById('guest-login-btn'),
-    logoutBtn: document.getElementById('logout-btn'),
-    settingsBtn: document.getElementById('settings-btn'),
-    exportBtn: document.getElementById('export-btn'),
-    importBtn: document.getElementById('import-btn'),
-    importFileInput: document.getElementById('import-file-input'),
-    privacyLink: document.getElementById('privacy-link'),
-    searchInput: document.getElementById('search-input'),
-    clearSearchBtn: document.getElementById('clear-search-btn'),
-    nameInput: document.getElementById('site-name'),
-    urlInput: document.getElementById('site-url'),
-    createBtn: document.getElementById('create-btn'),
-    folderNameInput: document.getElementById('folder-name'),
-    createFolderBtn: document.getElementById('create-folder-btn'),
-    suggestionsGrid: document.getElementById('suggestions-grid'),
-    linksGrid: document.getElementById('links-grid'),
-    resultsCount: document.getElementById('results-count'),
-    statLinks: document.getElementById('stat-links'),
-    statFolders: document.getElementById('stat-folders'),
-    statMode: document.getElementById('stat-mode'),
-    searchMeta: document.getElementById('search-meta'),
-    toast: document.getElementById('toast'),
-    // generic modal
-    modalBackdrop: document.getElementById('modal-backdrop'),
-    modalTitle: document.getElementById('modal-title'),
-    modalBody: document.getElementById('modal-body'),
-    modalActions: document.getElementById('modal-actions'),
-    modalCloseBtn: document.getElementById('modal-close-btn'),
-    // folder modal
-    folderModalBackdrop: document.getElementById('folder-modal-backdrop'),
-    folderModalTitle: document.getElementById('folder-modal-title'),
-    folderModalMeta: document.getElementById('folder-modal-meta'),
-    folderModalClose: document.getElementById('folder-modal-close'),
-    folderLinksList: document.getElementById('folder-links-list'),
-    flName: document.getElementById('fl-name'),
-    flUrl: document.getElementById('fl-url'),
-    flAddBtn: document.getElementById('fl-add-btn'),
-    folderDeleteBtn: document.getElementById('folder-delete-btn'),
-    folderDoneBtn: document.getElementById('folder-done-btn'),
-  };
-
-  // ── Utilities ──────────────────────────────────────────────
-  function normalizeUrl(input) {
-    const raw = String(input || '').trim();
-    if (!raw) return '';
-    try { return new URL(raw).href; } catch {
-      try { return new URL(`https://${raw}`).href; } catch { return ''; }
-    }
-  }
-  function normalizeKeyUrl(input) {
-    const href = normalizeUrl(input);
-    if (!href) return '';
-    try {
-      const url = new URL(href);
-      return `${url.hostname}${url.pathname}`.replace(/\/+$/, '');
-    } catch { return href.toLowerCase(); }
-  }
-  function getDisplayDomain(input) {
-    const href = normalizeUrl(input);
-    if (!href) return 'link';
-    try { return new URL(href).hostname; }
-    catch { return href.replace(/^https?:\/\//i, '').split('/')[0] || 'link'; }
-  }
-  function getFaviconUrl(url) {
-    const domain = getDisplayDomain(url);
-    return `https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(domain)}`;
-  }
-  function safeId() {
-    if (window.crypto && typeof window.crypto.randomUUID === 'function')
-      return window.crypto.randomUUID();
-    return `id_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-  }
-  function escapeHtml(value) {
-    return String(value)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-
-  // ── Storage ────────────────────────────────────────────────
-  function loadHiddenSuggestions() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.hiddenSuggestions) || '[]'); }
-    catch { return []; }
-  }
-  function persistHiddenSuggestions() {
-    localStorage.setItem(STORAGE_KEYS.hiddenSuggestions, JSON.stringify(state.hiddenSuggestions));
-  }
-  function loadGuestItems() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.guestData) || '[]'); }
-    catch { return []; }
-  }
-  function saveGuestItems() {
-    localStorage.setItem(STORAGE_KEYS.guestData, JSON.stringify(state.items));
-  }
-
-  // ── Toast ──────────────────────────────────────────────────
-  function showToast(message, type = 'syncing', duration = 2200) {
-    clearTimeout(state.toastTimer);
-    els.toast.className = `toast ${type}`;
-    els.toast.innerHTML = '';
-    if (type === 'syncing') {
-      const sp = document.createElement('div'); sp.className = 'spinner';
-      els.toast.appendChild(sp);
-    }
-    const t = document.createElement('span'); t.textContent = message;
-    els.toast.appendChild(t);
-    els.toast.classList.add('show');
-    if (duration > 0) state.toastTimer = setTimeout(() => els.toast.classList.remove('show'), duration);
-  }
-
-  // ── App shell ──────────────────────────────────────────────
-  function openAppShell() {
-    els.loginScreen.classList.add('is-hidden');
-    els.mainHeader.style.display = 'flex';
-    els.app.style.display = 'block';
-    els.footer.style.display = 'block';
-  }
-  function closeAppShell() {
-    els.loginScreen.classList.remove('is-hidden');
-    els.mainHeader.style.display = 'none';
-    els.app.style.display = 'none';
-    els.footer.style.display = 'none';
-  }
-  function setSessionModeLabel() {
-    els.statMode.textContent = state.isGuest ? 'Guest' : 'Google';
-    els.sessionLabel.textContent = state.isGuest
-      ? 'Guest mode — local only'
-      : (state.currentUser?.email || 'Google sync active');
-  }
-  function setSessionLabelFromUser(user) {
-    els.sessionLabel.textContent = user?.email || 'Google sync active';
-    els.logoutBtn.textContent = state.isGuest ? 'Exit Guest' : 'Logout';
-  }
-
-  // ── Stats ──────────────────────────────────────────────────
-  function updateStats() {
-    const folders = state.items.filter(i => i.type === 'folder');
-    const links = state.items.filter(i => i.type !== 'folder');
-    els.statLinks.textContent = String(links.length);
-    els.statFolders.textContent = String(folders.length);
-    setSessionModeLabel();
-  }
-
-  // ── Normalize / dedupe items ───────────────────────────────
-  function normalizeItems(list) {
-    const seenUrls = new Set();
-    const seenFolderIds = new Set();
-    const out = [];
-    for (const item of list) {
-      if (item.type === 'folder') {
-        if (seenFolderIds.has(item.id)) continue;
-        seenFolderIds.add(item.id);
-        // dedupe sub-links inside folder
-        const subSeen = new Set();
-        const cleanLinks = (Array.isArray(item.links) ? item.links : []).filter(sub => {
-          const k = normalizeKeyUrl(sub.url || '');
-          if (!k || subSeen.has(k)) return false;
-          subSeen.add(k); return true;
-        }).map(sub => ({
-          id: sub.id || safeId(),
-          name: String(sub.name || 'Link').trim(),
-          url: normalizeUrl(sub.url),
-          favicon: sub.favicon || getFaviconUrl(sub.url),
-          createdAt: sub.createdAt || null
-        }));
-        out.push({
-          id: item.id,
-          type: 'folder',
-          name: String(item.name || 'Folder').trim(),
-          createdAt: item.createdAt || null,
-          links: cleanLinks
-        });
-      } else {
-        const key = normalizeKeyUrl(item.url || '');
-        if (!key || seenUrls.has(key)) continue;
-        seenUrls.add(key);
-        out.push({
-          id: item.id || safeId(),
-          type: 'link',
-          name: String(item.name || 'Untitled').trim(),
-          url: normalizeUrl(item.url),
-          favicon: item.favicon || getFaviconUrl(item.url),
-          createdAt: item.createdAt || null
-        });
-      }
-    }
-    return out;
-  }
-
-  // ── Render ─────────────────────────────────────────────────
-  function getVisibleSuggestions() {
-    return suggestedLinks.filter(item => !state.hiddenSuggestions.includes(item.name));
-  }
-
-  function renderSuggestions() {
-    const items = getVisibleSuggestions();
-    if (!items.length) {
-      els.suggestionsGrid.innerHTML = `
-        <div class="empty-state">
-          <div class="emoji">🫥</div>
-          <h4>All suggestions hidden</h4>
-          <p><a href="#" id="reset-suggestions-link">Reset suggestions</a> to show them again.</p>
-        </div>`;
-      const rl = document.getElementById('reset-suggestions-link');
-      if (rl) rl.addEventListener('click', e => {
-        e.preventDefault();
-        state.hiddenSuggestions = []; persistHiddenSuggestions();
-        renderSuggestions(); updateStats(); showToast('Suggestions reset', 'success');
-      });
-      return;
-    }
-    els.suggestionsGrid.innerHTML = items.map(item => `
-      <article class="suggestion-card" tabindex="0" role="button" aria-label="Add ${escapeHtml(item.name)}">
-        <button class="card-x" type="button" data-action="hide-suggestion" data-name="${escapeHtml(item.name)}" aria-label="Hide ${escapeHtml(item.name)}">×</button>
-        <img class="card-icon" src="${escapeHtml(item.icon)}" alt="${escapeHtml(item.name)} icon" onerror="this.src='https://mohakdev1220.github.io/chromeportal/logo.png'" />
-        <div class="card-name">${escapeHtml(item.name)}</div>
-      </article>`).join('');
-  }
-
-  function getDisplayItems() {
-    const q = state.searchQuery.trim().toLowerCase();
-    if (!q) return state.items;
-    return state.items.filter(item => {
-      if (item.type === 'folder') {
-        return item.name.toLowerCase().includes(q) ||
-          (item.links || []).some(sub => sub.name.toLowerCase().includes(q) || sub.url.toLowerCase().includes(q));
-      }
-      return item.name.toLowerCase().includes(q) || item.url.toLowerCase().includes(q);
-    });
-  }
-
-  function renderLinks() {
-    const items = getDisplayItems();
-    els.resultsCount.textContent = `${items.length} item${items.length === 1 ? '' : 's'}`;
-
-    if (!state.items.length) {
-      els.linksGrid.innerHTML = `
-        <div class="empty-state">
-          <div class="emoji">🔗</div>
-          <h4>No links yet</h4>
-          <p>Add your first link above, or use the suggestions below.</p>
-        </div>`; return;
-    }
-    if (!items.length) {
-      els.linksGrid.innerHTML = `
-        <div class="empty-state">
-          <div class="emoji">🔎</div>
-          <h4>No matches found</h4>
-          <p>Try another search term or clear the search box.</p>
-        </div>`; return;
-    }
-
-    els.linksGrid.innerHTML = items.map(item => {
-      if (item.type === 'folder') {
-        const count = (item.links || []).length;
-        return `
-          <article class="folder-card" tabindex="0" role="button" data-id="${escapeHtml(item.id)}" aria-label="Open folder ${escapeHtml(item.name)}">
-            <button class="card-x" type="button" data-action="delete-folder" data-id="${escapeHtml(item.id)}" aria-label="Delete folder ${escapeHtml(item.name)}">×</button>
-            <span class="folder-count-badge">${count}</span>
-            <div class="folder-icon-wrap">📁</div>
-            <div class="card-name">${escapeHtml(item.name)}</div>
-            <div class="card-sub">${count} link${count === 1 ? '' : 's'}</div>
-          </article>`;
-      } else {
-        return `
-          <article class="link-card" tabindex="0" role="button" data-id="${escapeHtml(item.id)}" aria-label="Open ${escapeHtml(item.name)}">
-            <button class="card-x" type="button" data-action="delete-link" data-id="${escapeHtml(item.id)}" aria-label="Delete ${escapeHtml(item.name)}">×</button>
-            <img class="card-icon" src="${escapeHtml(item.favicon || getFaviconUrl(item.url))}" alt="${escapeHtml(item.name)} icon" onerror="this.src='https://mohakdev1220.github.io/chromeportal/logo.png'" />
-            <div class="card-name">${escapeHtml(item.name)}</div>
-            <div class="card-url">${escapeHtml(item.url.replace(/^https?:\/\//i, ''))}</div>
-          </article>`;
-      }
-    }).join('');
-  }
-
-  function renderAll() {
-    renderSuggestions();
-    renderLinks();
-    updateStats();
-  }
-
-  // ── Folder Modal ───────────────────────────────────────────
-  function openFolderModal(folderId) {
-    const folder = state.items.find(i => i.id === folderId && i.type === 'folder');
-    if (!folder) return;
-    state.activeFolderId = folderId;
-    els.folderModalTitle.textContent = folder.name;
-    renderFolderLinks(folder);
-    els.folderModalBackdrop.classList.add('show');
-    els.folderModalBackdrop.setAttribute('aria-hidden', 'false');
-    els.flName.value = ''; els.flUrl.value = '';
-    els.flName.focus();
-  }
-
-  function closeFolderModal() {
-    els.folderModalBackdrop.classList.remove('show');
-    els.folderModalBackdrop.setAttribute('aria-hidden', 'true');
-    state.activeFolderId = null;
-  }
-
-  function renderFolderLinks(folder) {
-    const links = folder.links || [];
-    const count = links.length;
-    els.folderModalMeta.textContent = `${count} link${count === 1 ? '' : 's'}`;
-
-    if (!links.length) {
-      els.folderLinksList.innerHTML = `<div class="folder-empty">📭 No links yet — add one above.</div>`;
-      return;
-    }
-    els.folderLinksList.innerHTML = links.map(sub => `
-      <div class="folder-link-row" data-subid="${escapeHtml(sub.id)}" data-url="${escapeHtml(sub.url)}">
-        <img src="${escapeHtml(sub.favicon || getFaviconUrl(sub.url))}" alt="${escapeHtml(sub.name)}"
-          onerror="this.src='https://mohakdev1220.github.io/chromeportal/logo.png'" />
-        <div class="folder-link-info">
-          <div class="folder-link-name">${escapeHtml(sub.name)}</div>
-          <div class="folder-link-url">${escapeHtml(sub.url.replace(/^https?:\/\//i, ''))}</div>
+        <div class="section-heading">
+          <h2>Everything you need.</h2>
+          <p>
+            Keep the websites you use every day organized,
+            accessible, and easy to find.
+          </p>
         </div>
-        <button class="folder-link-del" type="button" data-action="remove-sub" data-subid="${escapeHtml(sub.id)}" aria-label="Remove ${escapeHtml(sub.name)}">×</button>
-      </div>`).join('');
-  }
 
-  function addSubLink() {
-    const folderId = state.activeFolderId;
-    if (!folderId) return;
-    const name = els.flName.value.trim();
-    const rawUrl = els.flUrl.value.trim();
-    if (!name || !rawUrl) { showToast('Fill in both fields', 'error'); return; }
-    const url = normalizeUrl(rawUrl);
-    if (!url) { showToast('Invalid URL', 'error'); return; }
+        <div class="feature-grid">
 
-    const folderIdx = state.items.findIndex(i => i.id === folderId);
-    if (folderIdx === -1) return;
-    const folder = state.items[folderIdx];
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Quick access</h3>
+            <p>
+              Find your favorite websites instantly with
+              powerful search and keyboard shortcuts.
+            </p>
+          </div>
 
-    const key = normalizeKeyUrl(url);
-    if ((folder.links || []).some(sub => normalizeKeyUrl(sub.url) === key)) {
-      showToast('Link already in this folder', 'warning'); return;
-    }
+          <div class="feature">
+            <div class="feature-icon">📁</div>
+            <h3>Stay organized</h3>
+            <p>
+              Create folders and keep your links separated
+              exactly the way you want.
+            </p>
+          </div>
 
-    const newSub = { id: safeId(), name, url, favicon: getFaviconUrl(url), createdAt: new Date().toISOString() };
-    folder.links = [...(folder.links || []), newSub];
-    state.items[folderIdx] = { ...folder };
+          <div class="feature">
+            <div class="feature-icon">☁️</div>
+            <h3>Optional sync</h3>
+            <p>
+              Use ChromePortal without an account, or sign
+              in with Google when you want cross-device sync.
+            </p>
+          </div>
 
-    els.flName.value = ''; els.flUrl.value = '';
-    els.flName.focus();
-    renderFolderLinks(folder);
-    renderLinks(); updateStats();
-    saveData();
-    showToast(`${name} added to folder`, 'success');
-  }
+        </div>
 
-  function removeSubLink(subId) {
-    const folderId = state.activeFolderId;
-    if (!folderId) return;
-    const folderIdx = state.items.findIndex(i => i.id === folderId);
-    if (folderIdx === -1) return;
-    const folder = state.items[folderIdx];
-    folder.links = (folder.links || []).filter(sub => sub.id !== subId);
-    state.items[folderIdx] = { ...folder };
-    renderFolderLinks(folder);
-    renderLinks(); updateStats();
-    saveData();
-    showToast('Link removed', 'success');
-  }
-
-  function deleteFolder(folderId) {
-    if (!confirm('Delete this folder and all links inside it?')) return;
-    state.items = state.items.filter(i => i.id !== folderId);
-    closeFolderModal();
-    renderAll();
-    saveData();
-    showToast('Folder deleted', 'success');
-  }
-
-  // ── Add link / folder ──────────────────────────────────────
-  function addLinkFromInputs() {
-    const name = els.nameInput.value.trim();
-    let url = els.urlInput.value.trim();
-    if (!name || !url) { showToast('Fill in both fields', 'error'); return; }
-    url = normalizeUrl(url);
-    if (!url) { showToast('Enter a valid URL', 'error'); return; }
-
-    const key = normalizeKeyUrl(url);
-    const alreadyExists = state.items.some(i => i.type !== 'folder' && normalizeKeyUrl(i.url) === key);
-    if (alreadyExists) { showToast('That link already exists', 'warning'); return; }
-
-    const newLink = {
-      id: safeId(), type: 'link', name, url,
-      favicon: getFaviconUrl(url), createdAt: new Date().toISOString()
-    };
-    state.items = normalizeItems([newLink, ...state.items]);
-    els.nameInput.value = ''; els.urlInput.value = '';
-    els.nameInput.focus();
-    renderAll(); saveData();
-    showToast('Link added', 'success');
-  }
-
-  function createFolder() {
-    const name = els.folderNameInput.value.trim();
-    if (!name) { showToast('Enter a folder name', 'error'); return; }
-    const newFolder = {
-      id: safeId(), type: 'folder', name,
-      createdAt: new Date().toISOString(), links: []
-    };
-    state.items = [newFolder, ...state.items];
-    els.folderNameInput.value = '';
-    renderAll(); saveData();
-    showToast(`Folder "${name}" created`, 'success');
-    // open immediately so user can add links
-    openFolderModal(newFolder.id);
-  }
-
-  function addSuggestion(name, url) {
-    const normalized = normalizeUrl(url);
-    if (!normalized) { showToast('Invalid suggestion link', 'error'); return; }
-    const key = normalizeKeyUrl(normalized);
-    if (state.items.some(i => i.type !== 'folder' && normalizeKeyUrl(i.url) === key)) {
-      showToast('Link already exists', 'warning'); return;
-    }
-    const newLink = {
-      id: safeId(), type: 'link', name, url: normalized,
-      favicon: getFaviconUrl(normalized), createdAt: new Date().toISOString()
-    };
-    state.items = normalizeItems([newLink, ...state.items]);
-    renderAll(); saveData();
-    showToast(`${name} added`, 'success');
-  }
-
-  function removeItem(id) {
-    const before = state.items.length;
-    state.items = state.items.filter(item => item.id !== id);
-    if (state.items.length === before) return;
-    renderAll(); saveData();
-    showToast('Removed', 'success');
-  }
-
-  function openLink(url) {
-    const normalized = normalizeUrl(url);
-    if (!normalized) { showToast('Invalid link', 'error'); return; }
-    window.open(normalized, '_blank', 'noopener,noreferrer');
-  }
-
-  // ── Search ─────────────────────────────────────────────────
-  function clearSearch() {
-    state.searchQuery = ''; els.searchInput.value = '';
-    renderLinks(); els.searchInput.focus();
-  }
-  function handleSearchInput() {
-    state.searchQuery = els.searchInput.value;
-    const q = state.searchQuery.trim();
-    els.searchMeta.textContent = q ? `Showing matches for "${q}"` : 'Type to filter your saved links';
-    renderLinks();
-  }
-
-  // ── Import ─────────────────────────────────────────────────
-  function openImportModal() {
-    let importMode = 'merge'; // 'merge' | 'replace'
-    els.modalTitle.textContent = 'Import Links';
-    els.modalBody.innerHTML = `
-      <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Click to choose JSON file">
-        <div class="drop-icon">📂</div>
-        <strong>Click to choose a ChromePortal JSON file</strong>
-        <p>Or drag & drop it here</p>
-        <p id="import-file-name" style="color:var(--primary);font-weight:700;margin-top:6px;"></p>
       </div>
-      <div class="import-options">
-        <button class="import-option-btn selected" type="button" data-mode="merge">Merge with existing</button>
-        <button class="import-option-btn" type="button" data-mode="replace">Replace all</button>
+    </section>
+
+    <!-- CTA -->
+
+    <section class="cta">
+      <div class="container">
+
+        <div class="cta-box">
+
+          <h2>Ready to clean up your web?</h2>
+
+          <p>
+            Start organizing your links in seconds.
+            No login required.
+          </p>
+
+          <a href="main/" class="primary-button">
+            Get Started
+            <span>→</span>
+          </a>
+
+        </div>
+
       </div>
-      <p style="font-size:.85rem;">Merge keeps your current links and adds new ones. Replace overwrites everything.</p>
-    `;
-    els.modalActions.innerHTML = `
-      <button class="ghost-btn" type="button" id="import-cancel-btn">Cancel</button>
-      <button class="primary-btn" type="button" id="import-confirm-btn" disabled>Import</button>
-    `;
-    showModal();
+    </section>
 
-    let parsedData = null;
+  </main>
 
-    const dropZone = document.getElementById('drop-zone');
-    const fileNameEl = document.getElementById('import-file-name');
-    const confirmBtn = document.getElementById('import-confirm-btn');
+  <!-- FOOTER -->
 
-    // Option toggle
-    els.modalBody.querySelectorAll('.import-option-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        els.modalBody.querySelectorAll('.import-option-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        importMode = btn.dataset.mode;
-      });
-    });
+  <footer>
+    <div class="container">
 
-    // Drop zone click
-    dropZone.addEventListener('click', () => els.importFileInput.click());
-    dropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') els.importFileInput.click(); });
+      <div class="footer-inner">
 
-    // Drag & drop
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', e => {
-      e.preventDefault(); dropZone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file) handleImportFile(file, fileNameEl, confirmBtn, d => { parsedData = d; });
-    });
+        <div>
+          ChromePortal v2 · Built for quick access,
+          tidy organization, and simple syncing.
+        </div>
 
-    // File input
-    const onFileChange = () => {
-      const file = els.importFileInput.files[0];
-      if (file) handleImportFile(file, fileNameEl, confirmBtn, d => { parsedData = d; });
-      els.importFileInput.removeEventListener('change', onFileChange);
-      els.importFileInput.value = '';
-    };
-    els.importFileInput.addEventListener('change', onFileChange);
+        <div class="footer-links">
+          <a href="main/">Dashboard</a>
+          <a href="#">Privacy</a>
+        </div>
 
-    document.getElementById('import-cancel-btn').addEventListener('click', hideModal);
-    confirmBtn.addEventListener('click', () => {
-      if (!parsedData) return;
-      doImport(parsedData, importMode);
-      hideModal();
-    });
-  }
+      </div>
 
-  function handleImportFile(file, fileNameEl, confirmBtn, onParsed) {
-    if (!file.name.endsWith('.json')) {
-      showToast('Please select a .json file', 'error'); return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const data = JSON.parse(e.target.result);
-        if (!Array.isArray(data.links)) throw new Error('Invalid format');
-        fileNameEl.textContent = `✅ ${file.name} (${data.links.length} items)`;
-        confirmBtn.disabled = false;
-        onParsed(data);
-      } catch {
-        fileNameEl.textContent = '';
-        showToast('Invalid ChromePortal JSON file', 'error');
-        confirmBtn.disabled = true;
-      }
-    };
-    reader.readAsText(file);
-  }
+    </div>
+  </footer>
 
-  function doImport(data, mode) {
-    // Convert old-format links (no type field) to type:'link'
-    const incoming = (data.links || []).map(item => ({
-      ...item,
-      type: item.type || 'link'
-    }));
-
-    if (mode === 'replace') {
-      state.items = normalizeItems(incoming);
-      showToast(`Imported ${incoming.length} items`, 'success');
-    } else {
-      // merge: incoming goes after existing so existing wins deduplication
-      state.items = normalizeItems([...state.items, ...incoming]);
-      showToast(`Merged ${incoming.length} items`, 'success');
-    }
-    renderAll(); saveData();
-  }
-
-  // ── Export ─────────────────────────────────────────────────
-  function exportLinks() {
-    const payload = {
-      app: 'ChromePortal',
-      exportedAt: new Date().toISOString(),
-      mode: state.isGuest ? 'guest' : 'google',
-      links: state.items
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'chromeportal-links.json';
-    document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
-    showToast('Export downloaded', 'success');
-  }
-
-  // ── Save / sync ────────────────────────────────────────────
-  async function saveData() {
-    if (state.isGuest) { saveGuestItems(); renderAll(); return; }
-    if (!state.currentUser) return;
-    showToast('Syncing...', 'syncing', 0);
-    try {
-      await db.collection('users').doc(state.currentUser.uid).set({
-        email: state.currentUser.email || null,
-        links: state.items,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-      showToast('Synced', 'success');
-    } catch (error) {
-      console.error('Save failed:', error);
-      showToast(`Save failed: ${error.message}`, 'error');
-    }
-  }
-
-  async function initializeUserDocIfNeeded() {
-    if (!state.currentUser) return;
-    try {
-      await db.collection('users').doc(state.currentUser.uid).set({
-        email: state.currentUser.email || null, links: [],
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-    } catch (error) { console.error('Init failed:', error); }
-  }
-
-  function setupRealtimeSync(user) {
-    if (state.unsubscribe) { state.unsubscribe(); state.unsubscribe = null; }
-    if (!user) return;
-    state.unsubscribe = db.collection('users').doc(user.uid).onSnapshot(async docSnap => {
-      if (docSnap.exists) {
-        const data = docSnap.data() || {};
-        const raw = Array.isArray(data.links) ? data.links : [];
-        state.items = normalizeItems(raw.map(i => ({ ...i, type: i.type || 'link' })));
-      } else {
-        state.items = [];
-        await initializeUserDocIfNeeded();
-      }
-      state.isGuest = false; state.currentUser = user;
-      openAppShell(); setSessionLabelFromUser(user); renderAll();
-      showToast('Synced', 'success');
-    }, error => {
-      console.error('Listener error:', error);
-      showToast(`Sync error: ${error.message}`, 'error');
-    });
-  }
-
-  // ── Auth ───────────────────────────────────────────────────
-  function loginGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(error => {
-      showToast(`Login failed: ${error.message}`, 'error');
-    });
-  }
-  function enterGuestMode() {
-    if (state.unsubscribe) { state.unsubscribe(); state.unsubscribe = null; }
-    state.isGuest = true;
-    state.currentUser = { uid: 'guest', email: 'Guest User' };
-    const raw = loadGuestItems();
-    state.items = normalizeItems(raw.map(i => ({ ...i, type: i.type || 'link' })));
-    state.searchQuery = ''; els.searchInput.value = '';
-    openAppShell(); setSessionModeLabel(); renderAll();
-    showToast('Guest mode ready', 'success');
-  }
-  function logout() {
-    if (!confirm('Log out now?')) return;
-    if (state.isGuest) {
-      state.isGuest = false; state.currentUser = null; state.items = [];
-      state.searchQuery = ''; if (state.unsubscribe) { state.unsubscribe(); state.unsubscribe = null; }
-      closeAppShell(); return;
-    }
-    auth.signOut().catch(error => showToast(`Logout failed: ${error.message}`, 'error'));
-  }
-
-  // ── Modals ─────────────────────────────────────────────────
-  function showModal() {
-    els.modalBackdrop.classList.add('show');
-    els.modalBackdrop.setAttribute('aria-hidden', 'false');
-  }
-  function hideModal() {
-    els.modalBackdrop.classList.remove('show');
-    els.modalBackdrop.setAttribute('aria-hidden', 'true');
-    // reset file input
-    els.importFileInput.value = '';
-  }
-
-  function openPrivacy() {
-    els.modalTitle.textContent = 'Privacy';
-    els.modalBody.innerHTML = `
-      <p>Guest mode stores data only in this browser.</p>
-      <p>Google mode stores links in your Firestore account under your authenticated user ID.</p>
-      <p>No hidden background collection is implemented in this file. You control the link data you add.</p>`;
-    els.modalActions.innerHTML = '<button class="primary-btn" type="button" id="privacy-close-btn">Close</button>';
-    showModal();
-    document.getElementById('privacy-close-btn').addEventListener('click', hideModal);
-  }
-
-  function openSettings() {
-    const mode = state.isGuest ? 'Guest mode' : 'Google sync mode';
-    els.modalTitle.textContent = 'Settings';
-    els.modalBody.innerHTML = `
-      <div class="settings-list">
-        <div class="settings-item"><div><strong>Session</strong><small>${escapeHtml(mode)}</small></div></div>
-        <div class="settings-item"><div><strong>Suggestions</strong><small>Hide or restore built-in shortcuts</small></div></div>
-        <div class="settings-item"><div><strong>Data</strong><small>Export a backup or clear all data</small></div></div>
-      </div>`;
-    els.modalActions.innerHTML = `
-      <button class="ghost-btn" type="button" id="reset-suggestions-btn">Reset suggestions</button>
-      <button class="ghost-btn" type="button" id="clear-data-btn">Clear all</button>
-      <button class="primary-btn" type="button" id="close-settings-btn">Done</button>`;
-    showModal();
-    document.getElementById('reset-suggestions-btn').addEventListener('click', () => {
-      state.hiddenSuggestions = []; persistHiddenSuggestions();
-      renderSuggestions(); showToast('Suggestions reset', 'success');
-    });
-    document.getElementById('clear-data-btn').addEventListener('click', clearAllData);
-    document.getElementById('close-settings-btn').addEventListener('click', hideModal);
-  }
-
-  function clearAllData() {
-    if (!confirm(state.isGuest ? 'Delete all guest data?' : 'Delete all cloud links for this account?')) return;
-    if (state.isGuest) {
-      state.items = []; localStorage.removeItem(STORAGE_KEYS.guestData);
-      renderAll(); showToast('Guest data cleared', 'success'); return;
-    }
-    if (!state.currentUser) return;
-    db.collection('users').doc(state.currentUser.uid).set({
-      links: [], email: state.currentUser.email || null,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true })
-    .then(() => { state.items = []; renderAll(); showToast('Cloud links cleared', 'success'); })
-    .catch(error => showToast(`Error: ${error.message}`, 'error'));
-  }
-
-  // ── Composer tabs ──────────────────────────────────────────
-  function bindComposerTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.composer-pane').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(`pane-${btn.dataset.tab}`).classList.add('active');
-      });
-    });
-  }
-
-  // ── Grid event delegation ──────────────────────────────────
-  function attachGridEvents() {
-    // Suggestions grid
-    els.suggestionsGrid.addEventListener('click', e => {
-      const card = e.target.closest('.suggestion-card'); if (!card) return;
-      const actionBtn = e.target.closest('[data-action]');
-      if (actionBtn && actionBtn.dataset.action === 'hide-suggestion') {
-        e.stopPropagation();
-        hideSuggestion(actionBtn.dataset.name || ''); return;
-      }
-      const name = card.querySelector('.card-name')?.textContent?.trim() || '';
-      const match = suggestedLinks.find(i => i.name === name);
-      if (match) addSuggestion(match.name, match.url);
-    });
-    els.suggestionsGrid.addEventListener('keydown', e => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      const card = e.target.closest('.suggestion-card'); if (!card) return;
-      e.preventDefault(); card.click();
-    });
-
-    // Links grid
-    els.linksGrid.addEventListener('click', e => {
-      const folderCard = e.target.closest('.folder-card');
-      const linkCard = e.target.closest('.link-card');
-      const card = folderCard || linkCard;
-      if (!card) return;
-
-      const actionBtn = e.target.closest('[data-action]');
-      if (actionBtn) {
-        e.stopPropagation();
-        const action = actionBtn.dataset.action;
-        if (action === 'delete-folder') { deleteFolder(actionBtn.dataset.id); return; }
-        if (action === 'delete-link') { removeItem(actionBtn.dataset.id); return; }
-        return;
-      }
-
-      const id = card.dataset.id;
-      if (folderCard) { openFolderModal(id); return; }
-      if (linkCard) {
-        const item = state.items.find(i => i.id === id);
-        if (item) openLink(item.url);
-      }
-    });
-    els.linksGrid.addEventListener('keydown', e => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      const card = e.target.closest('.folder-card, .link-card'); if (!card) return;
-      e.preventDefault(); card.click();
-    });
-  }
-
-  function hideSuggestion(name) {
-    if (!state.hiddenSuggestions.includes(name)) {
-      state.hiddenSuggestions.push(name); persistHiddenSuggestions();
-    }
-    renderSuggestions(); updateStats();
-    showToast('Suggestion hidden', 'success');
-  }
-
-  // ── Folder modal events ────────────────────────────────────
-  function bindFolderModalEvents() {
-    els.folderModalClose.addEventListener('click', closeFolderModal);
-    els.folderDoneBtn.addEventListener('click', closeFolderModal);
-    els.folderDeleteBtn.addEventListener('click', () => deleteFolder(state.activeFolderId));
-    els.flAddBtn.addEventListener('click', addSubLink);
-    els.flName.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addSubLink(); } });
-    els.flUrl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addSubLink(); } });
-
-    // Sub-link click: open URL; × button: remove
-    els.folderLinksList.addEventListener('click', e => {
-      const delBtn = e.target.closest('[data-action="remove-sub"]');
-      if (delBtn) { e.stopPropagation(); removeSubLink(delBtn.dataset.subid); return; }
-      const row = e.target.closest('.folder-link-row');
-      if (row && row.dataset.url) openLink(row.dataset.url);
-    });
-
-    els.folderModalBackdrop.addEventListener('click', e => {
-      if (e.target === els.folderModalBackdrop) closeFolderModal();
-    });
-  }
-
-  // ── Bind all events ────────────────────────────────────────
-  function bindEvents() {
-    els.googleLoginBtn.addEventListener('click', loginGoogle);
-    els.guestLoginBtn.addEventListener('click', enterGuestMode);
-    els.logoutBtn.addEventListener('click', logout);
-    els.settingsBtn.addEventListener('click', openSettings);
-    els.exportBtn.addEventListener('click', exportLinks);
-    els.importBtn.addEventListener('click', openImportModal);
-    els.privacyLink.addEventListener('click', e => { e.preventDefault(); openPrivacy(); });
-    els.createBtn.addEventListener('click', addLinkFromInputs);
-    els.createFolderBtn.addEventListener('click', createFolder);
-    els.nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addLinkFromInputs(); } });
-    els.urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addLinkFromInputs(); } });
-    els.folderNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); createFolder(); } });
-    els.searchInput.addEventListener('input', handleSearchInput);
-    els.clearSearchBtn.addEventListener('click', clearSearch);
-    els.modalCloseBtn.addEventListener('click', hideModal);
-    els.modalBackdrop.addEventListener('click', e => { if (e.target === els.modalBackdrop) hideModal(); });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { hideModal(); closeFolderModal(); }
-    });
-    attachGridEvents();
-    bindFolderModalEvents();
-    bindComposerTabs();
-  }
-
-  // ── Auth state ─────────────────────────────────────────────
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      state.currentUser = user; state.isGuest = false;
-      openAppShell(); setSessionLabelFromUser(user); setupRealtimeSync(user); return;
-    }
-    if (!state.isGuest) {
-      closeAppShell(); state.currentUser = null; state.items = [];
-      state.searchQuery = ''; els.searchInput.value = '';
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    bindEvents(); renderAll();
-    if (state.isGuest) enterGuestMode();
-    auth.getRedirectResult().catch(error => console.error('Redirect login failed:', error));
-  });
-
-  window.addEventListener('beforeunload', () => {
-    if (state.isGuest && state.items.length) saveGuestItems();
-    if (state.unsubscribe) state.unsubscribe();
-  });
-
-})();
-</script>
 </body>
 </html>
